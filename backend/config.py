@@ -1,0 +1,7 @@
+IMG_SIZE = 224
+MAX_FRAMES = 30
+DATASET_PATH = "dataset"
+MODEL_PATH = "cricket_shot_cnn_lstm.h5"
+BATCH_SIZE = 4
+EPOCHS = 25
+SEQ_LEN = 30

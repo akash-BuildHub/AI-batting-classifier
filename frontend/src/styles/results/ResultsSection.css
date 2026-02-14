@@ -1,0 +1,24 @@
+.results-section {
+  min-height: 100vh;
+  padding: 28px 20px 16px;
+  background: radial-gradient(circle at top, #0b1a2a, #020814);
+  color: white;
+}
+
+.results-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 14px;
+}
+
+.status-pill {
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(24, 200, 255, 0.15);
+  margin-bottom: 10px;
+  display: inline-block;
+}
+
+.results-header h2 span {
+  color: #18c8ff;
+}

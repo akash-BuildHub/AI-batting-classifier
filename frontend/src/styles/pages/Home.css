@@ -1,0 +1,98 @@
+/* ================= HERO ================= */
+
+.hero {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  color: white;
+}
+
+.hero h1 {
+  font-size: 52px;
+  font-weight: 700;
+}
+
+.hero h1 span {
+  color: #20d6a5;
+}
+
+.hero p {
+  max-width: 700px;
+  opacity: 0.85;
+  font-size: 16px;
+  margin: 20px 0;
+}
+
+/* ================= CTA ================= */
+
+.cta-animation {
+  margin-top: 40px;
+}
+
+/* Button base */
+.cta-btn {
+  padding: 14px 36px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #18c8ff, #1dd1a1);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  gap: 2px;
+  color: #000;
+}
+
+/* ================= LETTER SHAKE (CRICKET IMPACT) ================= */
+
+.shake-btn span {
+  display: inline-block;
+  animation: letter-shake 3.2s ease-in-out infinite;
+}
+
+/* Slight delay per letter (handled inline in JSX) */
+@keyframes letter-shake {
+  0%,
+  78%,
+  100% {
+    transform: translateX(0);
+  }
+
+  80% {
+    transform: translateX(-2px);
+  }
+
+  82% {
+    transform: translateX(2px);
+  }
+
+  84% {
+    transform: translateX(-1px);
+  }
+
+  86% {
+    transform: translateX(1px);
+  }
+}
+
+/* ================= MODAL ================= */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.upload-card {
+  width: 420px;
+  background: rgba(20, 30, 40, 0.95);
+  border-radius: 16px;
+  padding: 20px;
+  color: white;
+}
