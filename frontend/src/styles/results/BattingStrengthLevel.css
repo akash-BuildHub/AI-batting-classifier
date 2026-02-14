@@ -81,7 +81,8 @@
   min-width: 190px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 10px;
   padding: 8px 14px;
   border-radius: 100px;
   background: rgba(17, 26, 38, 0.9);
@@ -89,8 +90,7 @@
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
 }
 
-.trophy-gold { color: #fbbf24; }
-.divider { width: 1px; height: 14px; background: rgba(255, 255, 255, 0.2); }
+.tier-icon { color: #fbbf24; }
 .elite-label { font-size: 11px; font-weight: 800; color: #22c55e; letter-spacing: 1.6px; }
 
 /* ✅ INCREASED GAP BETWEEN METRIC ROWS */

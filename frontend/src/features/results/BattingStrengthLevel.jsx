@@ -7,6 +7,7 @@ function BattingStrengthLevel({ analysis }) {
   const techniqueQuality = analysis?.technique_quality ?? "Unknown";
   const techniqueMatch = analysis?.technique_match ?? "Unknown";
   const summary = analysis?.summary ?? "Analysis summary unavailable.";
+  const currentTier = analysis?.tier || "Weak";
 
   const radius = 68;
   const circumference = 2 * Math.PI * radius;
@@ -18,6 +19,8 @@ function BattingStrengthLevel({ analysis }) {
     { label: "Strong", min: 50, max: 75, icon: Star },
     { label: "Elite", min: 75, max: 100, icon: Trophy },
   ];
+  const activeMetric = metricRows.find((item) => item.label.toLowerCase() === String(currentTier).toLowerCase()) || metricRows[0];
+  const TierIcon = activeMetric.icon;
 
   return (
     <div className="batting-strength-container">
@@ -63,9 +66,8 @@ function BattingStrengthLevel({ analysis }) {
             </div>
 
             <div className="elite-pill">
-              <Trophy size={14} className="trophy-gold" />
-              <div className="divider"></div>
-              <span className="elite-label">{analysis?.tier || "NO TIER"}</span>
+              <TierIcon size={14} className="tier-icon" />
+              <span className="elite-label">{currentTier.toUpperCase()}</span>
             </div>
           </div>
 
