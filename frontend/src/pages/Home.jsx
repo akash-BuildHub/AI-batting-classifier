@@ -4,7 +4,18 @@ import "../styles/pages/Home.css";
 const UploadCard = lazy(() => import("../features/upload/UploadCard"));
 const ProcessingAnimation = lazy(() => import("../features/upload/ProcessingAnimation"));
 const ResultsSection = lazy(() => import("../features/results/ResultsSection"));
-const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+const resolveApiBaseUrl = () => {
+  const configured = process.env.REACT_APP_API_URL?.trim();
+  if (configured) {
+    return configured.replace(/\/+$/, "");
+  }
+
+  const host = window.location.hostname || "localhost";
+  return `http://${host}:5000`;
+};
+
+const API_BASE_URL = resolveApiBaseUrl();
 
 function Home() {
   const [open, setOpen] = useState(false);
@@ -51,7 +62,7 @@ function Home() {
         body: formData,
       });
 
-      const payload = await response.json();
+      const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(payload.error || "Prediction failed");
       }
@@ -59,7 +70,11 @@ function Home() {
       setResults(payload);
       setProgress(100);
     } catch (err) {
-      setError(err.message || "Could not analyze this video");
+      if (err instanceof TypeError) {
+        setError(`Failed to connect to API at ${API_BASE_URL}. Start backend server and try again.`);
+      } else {
+        setError(err.message || "Could not analyze this video");
+      }
       setStage("upload");
       setOpen(false);
       setShowResults(false);

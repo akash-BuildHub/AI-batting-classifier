@@ -24,7 +24,6 @@ function UploadCard({ onSelect, onClose }) {
       <div className="ai-scene">
         <div className="digital-grid"></div>
         <div className="ball-container">
-          <div className="ball-trail"></div>
           <div className="cricket-ball"></div>
         </div>
         <div className="bat-system">

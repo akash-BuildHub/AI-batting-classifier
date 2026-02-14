@@ -1,4 +1,3 @@
-import React from "react";
 import { Zap, Shield, Star, Trophy, Activity } from "lucide-react";
 import "../../styles/results/BattingStrengthLevel.css";
 
@@ -14,10 +13,10 @@ function BattingStrengthLevel({ analysis }) {
   const offset = circumference - (strength / 100) * circumference;
 
   const metricRows = [
-    { label: "Weak", min: 0, max: 25, icon: Shield },
-    { label: "Moderate", min: 25, max: 50, icon: Zap },
-    { label: "Strong", min: 50, max: 75, icon: Star },
-    { label: "Elite", min: 75, max: 100, icon: Trophy },
+    { label: "Weak", rangeText: "0-39%", icon: Shield },
+    { label: "Moderate", rangeText: "40-59%", icon: Zap },
+    { label: "Strong", rangeText: "60-77%", icon: Star },
+    { label: "Elite", rangeText: "78-100%", icon: Trophy },
   ];
   const activeMetric = metricRows.find((item) => item.label.toLowerCase() === String(currentTier).toLowerCase()) || metricRows[0];
   const TierIcon = activeMetric.icon;
@@ -73,7 +72,7 @@ function BattingStrengthLevel({ analysis }) {
 
           <div className="metrics-column">
             {metricRows.map((item, idx) => {
-              const isActive = strength >= item.min && (strength < item.max || item.max === 100);
+              const isActive = item.label.toLowerCase() === String(currentTier).toLowerCase();
               return (
                 <div key={idx} className={`metric-row ${isActive ? "active" : ""}`}>
                   <div className="metric-info">
@@ -92,7 +91,7 @@ function BattingStrengthLevel({ analysis }) {
                   </div>
 
                   <span className="metric-range">
-                    {item.min}-{item.max}%
+                    {item.rangeText}
                   </span>
                 </div>
               );

@@ -27,12 +27,6 @@
 }
 
 /* STADIUM VISUALS */
-.stadium-ring {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.03);
-  stroke-width: 2;
-}
-
 .stadium-axis {
   stroke: rgba(255, 255, 255, 0.03);
   stroke-dasharray: 4;
@@ -60,12 +54,6 @@
   font-family: 'Courier New', monospace;
 }
 
-.node-label {
-  fill: rgba(255, 255, 255, 0.6);
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
 /* AXIS STYLES */
 .axis-line {
   stroke: rgba(24, 255, 255, 0.5);
