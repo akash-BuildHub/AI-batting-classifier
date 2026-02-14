@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import "../styles/pages/Home.css";
 
 const UploadCard = lazy(() => import("../features/upload/UploadCard"));
@@ -14,7 +14,6 @@ function Home() {
   const [results, setResults] = useState(null);
   const [error, setError] = useState("");
 
-  const resultsRef = useRef(null);
   const unlockPageScroll = () => {
     document.documentElement.style.overflowY = "auto";
     document.body.style.overflowY = "auto";
@@ -22,7 +21,7 @@ function Home() {
 
   const scrollToResults = () => {
     unlockPageScroll();
-    const target = document.getElementById("analysis-complete") || resultsRef.current;
+    const target = document.getElementById("analysis-complete");
     if (!target) {
       return false;
     }
@@ -183,7 +182,7 @@ function Home() {
       )}
 
       {showResults && (
-        <div ref={resultsRef}>
+        <div>
           <Suspense fallback={null}>
             <ResultsSection results={results} />
           </Suspense>
