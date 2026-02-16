@@ -8,7 +8,8 @@ const ResultsSection = lazy(() => import("../features/results/ResultsSection"));
 const resolveApiBaseUrl = () => {
   const configured = process.env.REACT_APP_API_URL?.trim();
   if (configured) {
-    return configured.replace(/\/+$/, "");
+    const normalized = /^https?:\/\//i.test(configured) ? configured : `https://${configured}`;
+    return normalized.replace(/\/+$/, "");
   }
 
   const host = window.location.hostname || "localhost";

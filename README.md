@@ -125,3 +125,18 @@ Dataset can be structured as either:
 
 - Current model file: `backend/cricket_shot_cnn_lstm.h5`
 - If class count and model output mismatch, retrain and regenerate `classes.json`.
+
+## Deploy on Render
+
+This repo includes `render.yaml` for Blueprint deployment of:
+
+- `ai-batting-classifier-api` (Flask web service)
+- `ai-batting-classifier-web` (React static site)
+
+Steps:
+
+1. Push this repository to GitHub.
+2. In Render, click **New +** -> **Blueprint**.
+3. Select this repository and deploy.
+
+Render will provision both services and wire `REACT_APP_API_URL` automatically.
