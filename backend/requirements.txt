@@ -5,3 +5,4 @@ opencv-python-headless
 tensorflow==2.15.1
 h5py
 gunicorn
+scikit-learn==1.4.2
