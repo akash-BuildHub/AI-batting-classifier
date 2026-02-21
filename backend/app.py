@@ -1,6 +1,7 @@
 import json
 import os
 import tempfile
+import threading
 from pathlib import Path
 
 import numpy as np
@@ -75,10 +76,26 @@ def _initialize():
     return model, classes, startup_warnings, None
 
 
-try:
-    model, classes, startup_warnings, startup_error = _initialize()
-except Exception as exc:  # noqa: BLE001
-    model, classes, startup_warnings, startup_error = None, [], [], str(exc)
+model = None
+classes = []
+startup_warnings = []
+startup_error = None
+_model_init_lock = threading.Lock()
+
+
+def ensure_model_loaded():
+    global model, classes, startup_warnings, startup_error
+
+    if model is not None:
+        return
+
+    with _model_init_lock:
+        if model is not None:
+            return
+        try:
+            model, classes, startup_warnings, startup_error = _initialize()
+        except Exception as exc:  # noqa: BLE001
+            model, classes, startup_warnings, startup_error = None, [], [], str(exc)
 
 
 def _clamp(value, low=0.0, high=100.0):
@@ -160,7 +177,9 @@ def index():
 
 @app.post("/predict")
 def predict():
-    if startup_error is not None:
+    ensure_model_loaded()
+
+    if startup_error is not None or model is None:
         return jsonify({"error": startup_error}), 500
 
     if "video" not in request.files:
