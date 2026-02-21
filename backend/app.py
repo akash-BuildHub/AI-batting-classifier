@@ -20,7 +20,12 @@ MODEL_FILE = BASE_DIR / MODEL_PATH
 CLASSES_FILE = BASE_DIR / "classes.json"
 
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    resources={r"/*": {"origins": ["https://ai-batting-classifier-web.onrender.com"]}},
+    methods=["GET", "POST", "OPTIONS"],
+    allow_headers=["Content-Type"],
+)
 
 
 def _load_model(num_classes=None):
