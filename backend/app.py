@@ -5,13 +5,10 @@ import threading
 from pathlib import Path
 
 import numpy as np
-import tensorflow as tf
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from config import MODEL_PATH
-from data_loader import infer_dataset_classes
-from model import build_model
 from video_utils import video_to_sequence
 
 
@@ -37,6 +34,8 @@ CORS(
 
 
 def _load_model(num_classes=None):
+    import tensorflow as tf
+
     if not MODEL_FILE.exists():
         raise FileNotFoundError(f"Model file not found: {MODEL_FILE}")
     try:
@@ -47,12 +46,16 @@ def _load_model(num_classes=None):
                 "Model deserialization failed and fallback weight-loading cannot run without class count."
             ) from exc
 
+        from model import build_model
+
         fallback = build_model(num_classes)
         fallback.load_weights(MODEL_FILE)
         return fallback
 
 
 def _load_classes(expected_count=None):
+    from data_loader import infer_dataset_classes
+
     file_classes = []
     if CLASSES_FILE.exists():
         with CLASSES_FILE.open("r", encoding="utf-8") as file:
@@ -75,6 +78,8 @@ def _load_classes(expected_count=None):
 
 
 def _initialize():
+    from data_loader import infer_dataset_classes
+
     startup_warnings = []
     initial_classes = _load_classes()
     model = _load_model(len(initial_classes) if initial_classes else None)

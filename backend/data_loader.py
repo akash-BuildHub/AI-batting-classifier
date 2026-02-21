@@ -2,7 +2,6 @@ from pathlib import Path
 
 import numpy as np
 from sklearn.model_selection import train_test_split
-from tensorflow.keras.utils import to_categorical
 
 from config import DATASET_PATH, SEQ_LEN
 from image_utils import video_to_frames
@@ -83,6 +82,8 @@ def _load_file_per_class_dataset(root):
 
 
 def load_dataset():
+    from tensorflow.keras.utils import to_categorical
+
     X, y, classes = _load_grouped_dataset(DATASET_PATH)
     if len(classes) == 0:
         X, y, classes = _load_file_per_class_dataset(DATASET_PATH)
