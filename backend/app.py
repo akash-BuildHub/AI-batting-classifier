@@ -146,6 +146,18 @@ def health():
     )
 
 
+@app.get("/")
+def index():
+    return jsonify(
+        {
+            "service": "ai-batting-classifier-api",
+            "ok": startup_error is None,
+            "health": "/health",
+            "predict": "/predict (POST, form-data: video)",
+        }
+    )
+
+
 @app.post("/predict")
 def predict():
     if startup_error is not None:
