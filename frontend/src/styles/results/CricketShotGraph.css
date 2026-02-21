@@ -88,3 +88,27 @@
   stroke: rgba(255, 255, 255, 0.1);
   stroke-width: 1;
 }
+
+@media (max-width: 900px) {
+  .cricket-graph-card {
+    overflow-x: auto;
+    overflow-y: hidden;
+    border-radius: 18px;
+    padding: 12px;
+  }
+
+  .cricket-graph {
+    min-width: 760px;
+    height: auto;
+  }
+
+  .cricket-graph-header h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+  }
+
+  .cricket-graph-header p {
+    margin: 0;
+    font-size: 13px;
+  }
+}

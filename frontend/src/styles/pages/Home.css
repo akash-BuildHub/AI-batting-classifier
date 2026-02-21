@@ -1,18 +1,22 @@
 /* ================= HERO ================= */
 
 .hero {
-  height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   color: white;
+  padding: 20px 16px;
+  box-sizing: border-box;
 }
 
 .hero h1 {
-  font-size: 52px;
+  font-size: clamp(34px, 6vw, 52px);
   font-weight: 700;
+  line-height: 1.08;
+  margin: 0;
 }
 
 .hero h1 span {
@@ -22,7 +26,7 @@
 .hero p {
   max-width: 700px;
   opacity: 0.85;
-  font-size: 16px;
+  font-size: clamp(14px, 2.5vw, 16px);
   margin: 20px 0;
 }
 
@@ -43,6 +47,7 @@
   display: flex;
   gap: 2px;
   color: #000;
+  font-weight: 700;
 }
 
 /* ================= LETTER SHAKE (CRICKET IMPACT) ================= */
@@ -90,9 +95,47 @@
 }
 
 .upload-card {
-  width: 420px;
+  width: min(420px, calc(100vw - 24px));
   background: rgba(20, 30, 40, 0.95);
   border-radius: 16px;
   padding: 20px;
   color: white;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    justify-content: flex-start;
+    padding-top: 84px;
+  }
+
+  .hero p {
+    max-width: 520px;
+    margin: 16px 0;
+  }
+
+  .cta-animation {
+    margin-top: 20px;
+  }
+
+  .cta-btn {
+    padding: 12px 26px;
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 38px;
+  }
+
+  .hero p {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .upload-card {
+    border-radius: 14px;
+    padding: 14px;
+  }
 }

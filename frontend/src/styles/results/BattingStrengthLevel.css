@@ -130,3 +130,84 @@
   justify-content: center;
   gap: 8px;
 }
+
+@media (max-width: 900px) {
+  .batting-strength-card {
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .batting-strength-content {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .metrics-column {
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .batting-strength-container {
+    padding: 4px 10px 0;
+  }
+
+  .batting-strength-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .batting-strength-header {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .header-text h3 {
+    font-size: 18px;
+  }
+
+  .header-text p {
+    font-size: 12px;
+  }
+
+  .gauge-visual-container {
+    width: 160px;
+    height: 160px;
+  }
+
+  .gauge-svg {
+    width: 160px;
+    height: 160px;
+  }
+
+  .percentage-display {
+    font-size: 38px;
+  }
+
+  .elite-pill {
+    min-width: 160px;
+    padding: 7px 10px;
+  }
+
+  .metric-row {
+    gap: 8px;
+    padding: 9px 8px;
+  }
+
+  .metric-info {
+    width: 86px;
+    font-size: 12px;
+    gap: 6px;
+  }
+
+  .metric-range {
+    width: 46px;
+    font-size: 11px;
+  }
+
+  .footer-note {
+    font-size: 11px;
+    text-align: center;
+    align-items: flex-start;
+  }
+}
