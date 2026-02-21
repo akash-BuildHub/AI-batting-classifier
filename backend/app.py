@@ -17,6 +17,7 @@ MODEL_FILE = BASE_DIR / MODEL_PATH
 CLASSES_FILE = BASE_DIR / "classes.json"
 
 app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 30 * 1024 * 1024
 CORS(
     app,
     resources={
@@ -41,16 +42,9 @@ def _load_model(num_classes=None):
     try:
         return tf.keras.models.load_model(MODEL_FILE, compile=False)
     except Exception as exc:  # noqa: BLE001
-        if num_classes is None:
-            raise RuntimeError(
-                "Model deserialization failed and fallback weight-loading cannot run without class count."
-            ) from exc
-
-        from model import build_model
-
-        fallback = build_model(num_classes)
-        fallback.load_weights(MODEL_FILE)
-        return fallback
+        raise RuntimeError(
+            "Failed to load model file. Ensure cricket_shot_cnn_lstm.h5 is a full Keras model compatible with TensorFlow 2.15.1."
+        ) from exc
 
 
 def _load_classes(expected_count=None):
@@ -257,6 +251,11 @@ def predict():
     finally:
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
+
+
+@app.errorhandler(413)
+def too_large(_err):
+    return jsonify({"error": "Video is too large. Use a file under 30MB."}), 413
 
 
 if __name__ == "__main__":
