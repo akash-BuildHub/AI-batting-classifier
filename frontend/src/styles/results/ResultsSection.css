@@ -1,8 +1,21 @@
 .results-section {
-  min-height: 100vh;
-  padding: 28px 20px 16px;
   background: radial-gradient(circle at top, #0b1a2a, #020814);
   color: white;
+}
+
+/* ── Page 1: header + graph — exactly one viewport tall ── */
+.results-page-one {
+  min-height: 100vh;
+  padding: 28px 20px 16px;
+}
+
+/* ── Page 2: batting analysis + reset — starts below the fold ── */
+.results-page-two {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 28px 20px 36px;
 }
 
 .results-header {
@@ -23,14 +36,77 @@
   color: #18c8ff;
 }
 
+.shot-result-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.shot-result-row p {
+  margin: 0;
+}
+
+.shot-name {
+  color: #18ffff;
+}
+
+.confidence-value {
+  color: #94a3b8;
+}
+
+.verified-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.unverified-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.30);
+}
+
+.verification-detail {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 4px;
+}
+
 @media (max-width: 768px) {
-  .results-section {
+  .results-page-one {
     padding: 20px 12px 12px;
+  }
+
+  .results-page-two {
+    padding: 20px 12px 24px;
+    min-height: auto;
   }
 
   .status-pill {
     font-size: 12px;
     padding: 5px 12px;
+  }
+
+  .results-header {
+    margin: 0 auto 10px;
   }
 
   .results-header h2 {
@@ -41,5 +117,28 @@
   .results-header p {
     margin: 0;
     font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .results-page-one {
+    padding: 14px 8px 8px;
+  }
+
+  .results-page-two {
+    padding: 14px 8px 20px;
+  }
+
+  .results-header h2 {
+    font-size: 20px;
+  }
+
+  .results-header p {
+    font-size: 12px;
+  }
+
+  .status-pill {
+    font-size: 11px;
+    padding: 4px 10px;
   }
 }

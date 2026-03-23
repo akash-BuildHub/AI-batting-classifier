@@ -54,6 +54,10 @@
   font-family: 'Courier New', monospace;
 }
 
+.vertical-value {
+  dominant-baseline: central;
+}
+
 /* AXIS STYLES */
 .axis-line {
   stroke: rgba(24, 255, 255, 0.5);

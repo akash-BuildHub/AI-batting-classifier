@@ -1,0 +1,8 @@
+{
+  "name": "ai-batting-classifier-runner",
+  "private": true,
+  "scripts": {
+    "full": "npm --prefix frontend run full",
+    "install:all": "npm --prefix frontend install"
+  }
+}

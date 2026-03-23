@@ -28,14 +28,14 @@ function BattingStrengthLevel({ analysis }) {
           <Activity size={24} className="accent-green" />
           <div className="header-text">
             <h3>Batting Power Analysis</h3>
-            <p>Shot quality and control compared to learned class patterns</p>
+            <p>Shot quality and style compared with AI-classified patterns</p>
           </div>
         </div>
 
         <div className="batting-strength-content">
           <div className="gauge-section">
             <div className="gauge-visual-container">
-              <svg width="190" height="190" className="gauge-svg">
+              <svg viewBox="0 0 190 190" className="gauge-svg">
                 <defs>
                   <linearGradient id="powerGradient" x1="0%" y1="100%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#ef4444" />
@@ -96,12 +96,13 @@ function BattingStrengthLevel({ analysis }) {
                 </div>
               );
             })}
+
           </div>
         </div>
 
         <div className="footer-note">
           <Zap size={14} />
-          {summary} Technique quality: {techniqueQuality}. Shot-style match: {techniqueMatch}.
+          Suggestion:{summary} Technique: {techniqueQuality}. Style match: {techniqueMatch}.
         </div>
       </div>
     </div>

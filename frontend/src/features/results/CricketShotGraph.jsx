@@ -48,7 +48,7 @@ function parseConfidence(value) {
 }
 
 function CricketShotGraph({ predictions = [] }) {
-  const chartTop = 20;
+  const chartTop = 40;
   const chartBottom = 300;
   const chartHeight = chartBottom - chartTop;
   const yAxisLabels = [0, 20, 40, 60, 80, 100];
@@ -121,46 +121,52 @@ function CricketShotGraph({ predictions = [] }) {
         )}
 
         {/* X AXIS LABELS */}
-        {values.map((item, i) => (
-          <g key={i}>
-            <line
-              x1={xAxisPositions[i]}
-              y1={chartBottom}
-              x2={xAxisPositions[i]}
-              y2={chartBottom + 24}
-              className="x-label-guide"
-            />
-            <text
-              x={xAxisPositions[i]}
-              y="335"
-              className="x-axis-label"
-              textAnchor="middle"
-            >
-              {normalizeLabel(item.shot)}
-            </text>
-            <line
-              x1={xAxisPositions[i]}
-              y1={chartBottom - 5}
-              x2={xAxisPositions[i]}
-              y2={chartBottom + 5}
-              className="axis-tick"
-            />
+        {values.map((item, i) => {
+          const pointY = chartBottom - (item.confidence * chartHeight) / 100;
+          const labelY = Math.max(chartTop + 18, pointY - 30);
 
-            <circle
-              cx={xAxisPositions[i]}
-              cy={chartBottom - (item.confidence * chartHeight) / 100}
-              r="7"
-              className="data-node"
-            />
-            <text
-              x={xAxisPositions[i]}
-              y={chartBottom - 15 - (item.confidence * chartHeight) / 100}
-              className="node-percent"
-            >
-              {item.confidence.toFixed(1)}%
-            </text>
-          </g>
-        ))}
+          return (
+            <g key={i}>
+              <line
+                x1={xAxisPositions[i]}
+                y1={chartBottom}
+                x2={xAxisPositions[i]}
+                y2={chartBottom + 24}
+                className="x-label-guide"
+              />
+              <text
+                x={xAxisPositions[i]}
+                y="335"
+                className="x-axis-label"
+                textAnchor="middle"
+              >
+                {normalizeLabel(item.shot)}
+              </text>
+              <line
+                x1={xAxisPositions[i]}
+                y1={chartBottom - 5}
+                x2={xAxisPositions[i]}
+                y2={chartBottom + 5}
+                className="axis-tick"
+              />
+              <circle
+                cx={xAxisPositions[i]}
+                cy={pointY}
+                r="7"
+                className="data-node"
+              />
+              <text
+                x={xAxisPositions[i]}
+                y={labelY}
+                className="node-percent vertical-value"
+                textAnchor="start"
+                transform={`rotate(-90 ${xAxisPositions[i]} ${labelY})`}
+              >
+                {item.confidence.toFixed(1)}%
+              </text>
+            </g>
+          );
+        })}
 
         {values.length === 0 && (
           <text x="500" y="210" className="axis-label" textAnchor="middle">

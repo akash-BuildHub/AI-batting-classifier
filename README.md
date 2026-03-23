@@ -69,9 +69,17 @@ cd frontend
 npm start
 ```
 
+Run both from project root:
+
+```powershell
+npm run install:all   # first time only
+npm run full
+```
+
 Or run both from `frontend`:
 
 ```powershell
+cd frontend
 npm run full
 ```
 
@@ -140,3 +148,4 @@ Steps:
 3. Select this repository and deploy.
 
 Render will provision both services and wire `REACT_APP_API_URL` automatically.
+

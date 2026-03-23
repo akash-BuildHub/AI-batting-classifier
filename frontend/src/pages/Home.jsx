@@ -8,7 +8,9 @@ const ResultsSection = lazy(() => import("../features/results/ResultsSection"));
 const resolveApiBaseUrl = () => {
   const configured = process.env.REACT_APP_API_URL?.trim();
   if (configured) {
-    const normalized = /^https?:\/\//i.test(configured) ? configured : `https://${configured}`;
+    const hasProtocol = /^https?:\/\//i.test(configured);
+    const looksLocalHost = /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(configured);
+    const normalized = hasProtocol ? configured : `${looksLocalHost ? "http" : "https"}://${configured}`;
     return normalized.replace(/\/+$/, "");
   }
 
@@ -51,7 +53,7 @@ function Home() {
     setError("");
     setResults(null);
     setStage("uploading");
-    setProgress(0);
+    setProgress(1);
     setShowResults(false);
 
     const formData = new FormData();
@@ -70,20 +72,24 @@ function Home() {
 
       setResults(payload);
       setProgress(100);
+      setStage("upload");
+      setOpen(false);
+      setShowResults(true);
+      return;
     } catch (err) {
       if (err instanceof TypeError) {
-        setError(`Failed to connect to API at ${API_BASE_URL}. Start backend server and try again.`);
+        setError(
+          `Failed to connect to API at ${API_BASE_URL}. Start backend with: cd backend && .\\.venv\\Scripts\\python.exe app.py`
+        );
       } else {
         setError(err.message || "Could not analyze this video");
       }
       setStage("upload");
+      setProgress(0);
       setOpen(false);
       setShowResults(false);
       return;
     }
-
-    setStage("processing");
-    setProgress(0);
   };
 
   const closeUploadModal = () => {
@@ -93,30 +99,36 @@ function Home() {
     setError("");
   };
 
+  // Animate progress — no hard ceilings, no stalls.
   useEffect(() => {
-    if (stage === "uploading" || stage === "processing" || stage === "analyzing") {
-      const interval = setInterval(() => {
-        setProgress((p) => {
-          if (stage === "uploading") {
-            return p >= 92 ? p : p + 3;
-          }
-          if (p >= 100) {
-            if (stage === "processing") {
-              setStage("analyzing");
-            } else {
-              clearInterval(interval);
-              setOpen(false);
-              setShowResults(true);
-            }
-            return 0;
-          }
-          return p + 5;
-        });
-      }, 180);
+    if (stage !== "uploading" && stage !== "processing" && stage !== "analyzing") return;
 
-      return () => clearInterval(interval);
-    }
+    const id = setInterval(() => {
+      setProgress((p) => {
+        if (stage === "uploading") {
+          // Asymptotic deceleration toward ~92%: 5% of remaining distance per tick,
+          // with a guaranteed minimum so the bar is always visibly moving.
+          const increment = Math.max((92 - p) * 0.05, 0.06);
+          return Math.min(p + increment, 92);
+        }
+        if (stage === "processing") return Math.min(p + 3.0, 95);
+        // analyzing
+        return Math.min(p + 2.0, 100);
+      });
+    }, 50);
+
+    return () => clearInterval(id);
   }, [stage]);
+
+  // Advance stage when progress crosses each threshold.
+  useEffect(() => {
+    if (stage === "processing" && progress >= 95) {
+      setStage("analyzing");
+    } else if (stage === "analyzing" && progress >= 100) {
+      setOpen(false);
+      setShowResults(true);
+    }
+  }, [progress, stage]);
 
   useEffect(() => {
     if (!showResults || !results) {
@@ -209,3 +221,4 @@ function Home() {
 }
 
 export default Home;
+

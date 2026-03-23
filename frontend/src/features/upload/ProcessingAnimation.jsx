@@ -4,9 +4,24 @@ import "../../styles/upload/ProcessingAnimation.css";
 
 const ProcessingAnimation = ({ stage, progress }) => {
   const stageConfig = {
-    uploading: { icon: Activity, title: "Uploading...", color: "#48dbfb" },
-    processing: { icon: Cpu, title: "Processing...", color: "#1dd1a1" },
-    analyzing: { icon: Brain, title: "AI Analysis...", color: "#ff4757" },
+    uploading: {
+      icon: Activity,
+      title: "Uploading Video...",
+      color: "#48dbfb",
+      subtext: "Sending your video to the AI engine",
+    },
+    processing: {
+      icon: Cpu,
+      title: "Processing Frames...",
+      color: "#1dd1a1",
+      subtext: "Extracting batting sequences from footage",
+    },
+    analyzing: {
+      icon: Brain,
+      title: "AI Analysis...",
+      color: "#ff4757",
+      subtext: "Classifying shot and computing batting metrics",
+    },
   };
 
   const current = stageConfig[stage];
@@ -40,20 +55,21 @@ const ProcessingAnimation = ({ stage, progress }) => {
             <h2>{current.title}</h2>
           </div>
           
-          <div className="percentage-text">{progress}%</div>
+          <div className="percentage-text">{Math.round(progress)}%</div>
 
           {/* Progress bar that looks like a cricket pitch */}
           <div className="pitch-progress-container">
             <div className="crease-line start"></div>
-            <motion.div 
+            <motion.div
               className="pitch-fill"
               style={{ backgroundColor: current.color }}
               animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.08, ease: "linear" }}
             />
             <div className="crease-line end"></div>
           </div>
           
-          <p className="status-subtext">Calculating your batting metrics</p>
+          <p className="status-subtext">{current.subtext}</p>
         </div>
 
       </div>
