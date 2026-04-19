@@ -1,13 +1,15 @@
 import json
 import os
+import re
 import tempfile
 import threading
 from pathlib import Path
 
 import numpy as np
 import tensorflow as tf
-from flask import Flask, jsonify, request
-from flask_cors import CORS
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from config import IMG_SIZE, MODEL_PATH, SEQ_LEN
 from data_loader import infer_dataset_classes
@@ -19,19 +21,24 @@ BASE_DIR = Path(__file__).resolve().parent
 MODEL_FILE = BASE_DIR / MODEL_PATH
 CLASSES_FILE = BASE_DIR / "classes.json"
 
-app = Flask(__name__)
-CORS(
-    app,
-    resources={
-        r"/*": {
-            "origins": [
-                "https://ai-batting-classifier-web.onrender.com",
-                "http://localhost:3000",
-                "http://127.0.0.1:3000",
-            ]
-        }
-    },
-    methods=["GET", "POST", "OPTIONS"],
+_default_origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://ai-batting-classifier-web.onrender.com",
+]
+_extra_origins = [
+    origin.strip()
+    for origin in os.environ.get("CORS_ALLOWED_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
+app = FastAPI(title="AI Batting Classifier API")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_default_origins + _extra_origins,
+    # Any Vercel preview/production deployment.
+    allow_origin_regex=r"^https://.*\.vercel\.app$",
+    allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type"],
 )
 
@@ -142,7 +149,6 @@ def build_batting_analysis(probabilities, labels, vote_confidence=100.0, num_win
 
     shot_coverage = float(np.count_nonzero(probabilities > 0.10) / max(len(probabilities), 1))
 
-    # Multi-window agreement is the primary reliability signal for consistency.
     consistency_score = _clamp(0.45 * top1 + 0.25 * margin + 0.30 * vote_confidence)
     control_score = _clamp((1.0 - normalized_entropy) * 100.0)
     adaptability_score = _clamp(shot_coverage * 100.0)
@@ -163,7 +169,6 @@ def build_batting_analysis(probabilities, labels, vote_confidence=100.0, num_win
         tier = "Weak"
         note = "Shot selection confidence is low. Focus on footwork and head position."
 
-    # Technique quality considers both model confidence and cross-window agreement.
     if top1 >= 65 and vote_confidence >= 70:
         technique_quality = "Excellent"
     elif top1 >= 50 and vote_confidence >= 50:
@@ -206,59 +211,51 @@ def build_batting_analysis(probabilities, labels, vote_confidence=100.0, num_win
 
 @app.get("/health")
 def health():
-    return jsonify(
-        {
-            "ok": startup_error is None,
-            "model_loaded": model is not None,
-            "num_classes": len(classes),
-            "classes": classes,
-            "warnings": startup_warnings,
-            "startup_error": startup_error,
-        }
-    )
+    return {
+        "ok": startup_error is None,
+        "model_loaded": model is not None,
+        "num_classes": len(classes),
+        "classes": classes,
+        "warnings": startup_warnings,
+        "startup_error": startup_error,
+    }
 
 
 @app.get("/")
 def index():
-    return jsonify(
-        {
-            "service": "ai-batting-classifier-api",
-            "ok": startup_error is None,
-            "health": "/health",
-            "predict": "/predict (POST, form-data: video)",
-        }
-    )
+    return {
+        "service": "ai-batting-classifier-api",
+        "ok": startup_error is None,
+        "health": "/health",
+        "predict": "/predict (POST, form-data: video)",
+    }
 
 
 @app.post("/predict")
-def predict():
+async def predict(video: UploadFile = File(...)):
     ensure_model_loaded()
 
     if startup_error is not None or model is None:
-        return jsonify({"error": startup_error}), 500
+        raise HTTPException(status_code=500, detail=startup_error or "Model not loaded")
 
-    if "video" not in request.files:
-        return jsonify({"error": "Missing 'video' file in form-data"}), 400
-
-    video = request.files["video"]
-    if video.filename == "":
-        return jsonify({"error": "Empty filename"}), 400
+    if not video.filename:
+        raise HTTPException(status_code=400, detail="Empty filename")
 
     suffix = os.path.splitext(video.filename)[1] or ".mp4"
     temp_path = None
 
     try:
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-            video.save(tmp.name)
+            contents = await video.read()
+            tmp.write(contents)
             temp_path = tmp.name
 
         windows = video_to_windows(temp_path, max_windows=MAX_INFERENCE_WINDOWS)
         if windows is None:
-            return jsonify(
-                {
-                    "error": "Could not read enough frames from the video. Use a clearer clip with at least 30 readable frames."
-                }
-            ), 400
+            raise HTTPException(
+                status_code=400,
+                detail="Could not read enough frames from the video. Use a clearer clip with at least 30 readable frames.",
+            )
 
         # Direct model call — faster than model.predict() for small batches
         # because it skips tf.data.Dataset creation overhead.
@@ -266,50 +263,45 @@ def predict():
         all_preds = model(tf.constant(inputs), training=False).numpy()
 
         if all_preds.shape[1] != len(classes):
-            return jsonify(
-                {
-                    "error": (
-                        f"Model output classes ({all_preds.shape[1]}) do not match classes.json entries ({len(classes)}). "
-                        "Regenerate classes.json for the trained model."
-                    )
-                }
-            ), 500
+            raise HTTPException(
+                status_code=500,
+                detail=(
+                    f"Model output classes ({all_preds.shape[1]}) do not match classes.json entries ({len(classes)}). "
+                    "Regenerate classes.json for the trained model."
+                ),
+            )
 
-        # Mean probabilities across all windows → used for the confidence chart.
         mean_probs = np.mean(all_preds, axis=0)
 
-        # Majority vote across windows → most frequently predicted shot = verified result.
         top_per_window = np.argmax(all_preds, axis=1)
         vote_counts = np.bincount(top_per_window, minlength=len(classes))
         dominant_idx = int(np.argmax(vote_counts))
         num_windows = len(windows)
         vote_confidence = float(vote_counts[dominant_idx] / num_windows * 100.0)
 
-        # Build sorted chart data from mean probabilities.
         items = [
             {"shot": label, "confidence": round(float(prob) * 100.0, 2)}
             for label, prob in zip(classes, mean_probs)
         ]
         items.sort(key=lambda item: item["confidence"], reverse=True)
 
-        # Report the majority-voted shot as the top result (more reliable than argmax of mean).
         dominant_shot = classes[dominant_idx]
         dominant_confidence = round(float(mean_probs[dominant_idx] * 100.0), 2)
 
         analysis = build_batting_analysis(mean_probs, classes, vote_confidence, num_windows)
 
-        return jsonify(
-            {
-                "predictions": items,
-                "top_shot": dominant_shot,
-                "top_confidence": dominant_confidence,
-                "analysis": analysis,
-            }
-        )
+        return {
+            "predictions": items,
+            "top_shot": dominant_shot,
+            "top_confidence": dominant_confidence,
+            "analysis": analysis,
+        }
     finally:
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    import uvicorn
+
+    uvicorn.run("app:app", host="0.0.0.0", port=5000, reload=True)
