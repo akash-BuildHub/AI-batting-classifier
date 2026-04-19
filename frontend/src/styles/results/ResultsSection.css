@@ -1,21 +1,23 @@
 .results-section {
   background: radial-gradient(circle at top, #0b1a2a, #020814);
   color: white;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 0 24px;
 }
 
-/* ── Page 1: header + graph — exactly one viewport tall ── */
 .results-page-one {
-  min-height: 100vh;
-  padding: 28px 20px 16px;
+  min-height: 100svh;
+  padding: 28px 20px 12px;
 }
 
-/* ── Page 2: batting analysis + reset — starts below the fold ── */
 .results-page-two {
-  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 28px 20px 36px;
+  padding: 20px 20px 12px;
 }
 
 .results-header {
@@ -81,7 +83,7 @@
   letter-spacing: 0.8px;
   background: rgba(251, 191, 36, 0.12);
   color: #fbbf24;
-  border: 1px solid rgba(251, 191, 36, 0.30);
+  border: 1px solid rgba(251, 191, 36, 0.3);
 }
 
 .verification-detail {
@@ -90,16 +92,28 @@
   margin: 0 0 4px;
 }
 
-@media (max-width: 768px) {
-  .results-page-one {
-    padding: 20px 12px 12px;
+@media (max-width: 900px) {
+  .results-section {
+    gap: 10px;
+    padding-bottom: 16px;
   }
 
+  .results-page-one,
   .results-page-two {
-    padding: 20px 12px 24px;
     min-height: auto;
   }
 
+  .results-page-one {
+    padding: 20px 12px 8px;
+  }
+
+  .results-page-two {
+    justify-content: flex-start;
+    padding: 8px 12px 12px;
+  }
+}
+
+@media (max-width: 768px) {
   .status-pill {
     font-size: 12px;
     padding: 5px 12px;
@@ -122,11 +136,11 @@
 
 @media (max-width: 480px) {
   .results-page-one {
-    padding: 14px 8px 8px;
+    padding: 14px 8px 6px;
   }
 
   .results-page-two {
-    padding: 14px 8px 20px;
+    padding: 6px 8px 10px;
   }
 
   .results-header h2 {
@@ -140,5 +154,6 @@
   .status-pill {
     font-size: 11px;
     padding: 4px 10px;
+    margin-bottom: 8px;
   }
 }

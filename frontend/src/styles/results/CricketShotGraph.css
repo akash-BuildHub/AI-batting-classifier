@@ -97,12 +97,14 @@
   .cricket-graph-card {
     overflow-x: auto;
     overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     border-radius: 18px;
-    padding: 12px;
+    padding: 12px 10px 10px;
+    margin: 12px auto 8px;
   }
 
   .cricket-graph {
-    min-width: 760px;
+    min-width: 680px;
     height: auto;
   }
 
@@ -114,5 +116,57 @@
   .cricket-graph-header p {
     margin: 0;
     font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  .cricket-graph-card {
+    border-radius: 14px;
+    padding: 10px 8px 8px;
+  }
+
+  .cricket-graph {
+    min-width: 560px;
+  }
+
+  .ai-badge {
+    font-size: 9px;
+    padding: 3px 8px;
+    margin-bottom: 8px;
+  }
+
+  .cricket-graph-header h3 {
+    font-size: 16px;
+  }
+
+  .cricket-graph-header p {
+    font-size: 12px;
+  }
+
+  .axis-label {
+    font-size: 10px;
+  }
+
+  .x-axis-label {
+    font-size: 9px;
+  }
+
+  .node-percent {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .cricket-graph {
+    min-width: 500px;
+  }
+
+  .x-axis-label {
+    font-size: 8px;
+    letter-spacing: 0.2px;
+  }
+
+  .axis-label {
+    font-size: 9px;
   }
 }

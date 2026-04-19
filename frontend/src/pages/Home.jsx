@@ -5,6 +5,8 @@ const UploadCard = lazy(() => import("../features/upload/UploadCard"));
 const ProcessingAnimation = lazy(() => import("../features/upload/ProcessingAnimation"));
 const ResultsSection = lazy(() => import("../features/results/ResultsSection"));
 
+const PRODUCTION_API_URL = "https://ai-batting-classifier-production.up.railway.app";
+
 const resolveApiBaseUrl = () => {
   const configured = process.env.REACT_APP_API_URL?.trim();
   if (configured) {
@@ -14,8 +16,12 @@ const resolveApiBaseUrl = () => {
     return normalized.replace(/\/+$/, "");
   }
 
-  const host = window.location.hostname || "localhost";
-  return `http://${host}:5000`;
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const isLocal = host === "localhost" || host === "127.0.0.1" || host === "";
+  if (isLocal) {
+    return `http://${host || "localhost"}:5000`;
+  }
+  return PRODUCTION_API_URL;
 };
 
 const API_BASE_URL = resolveApiBaseUrl();
@@ -167,7 +173,7 @@ function Home() {
 
   return (
     <>
-      <div className="hero">
+      <div className={`hero${showResults ? " hero-compact" : ""}`}>
         <h1>
           Analyze Your <span>Cricket Batting</span> Strengths
         </h1>
