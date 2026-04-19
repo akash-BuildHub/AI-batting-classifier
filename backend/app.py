@@ -24,7 +24,6 @@ CLASSES_FILE = BASE_DIR / "classes.json"
 _default_origins = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://ai-batting-classifier-web.onrender.com",
 ]
 _extra_origins = [
     origin.strip()
