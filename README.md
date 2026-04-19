@@ -1,6 +1,12 @@
 # AI Batting Classifier
 
-Full-stack cricket shot classification app that predicts batting shot type from uploaded video and returns a batting-strength analysis.
+Full-stack cricket batting analysis app. Upload a video from the React UI and the FastAPI backend returns shot predictions and a batting-strength breakdown.
+
+## Tech Stack
+
+- Backend: FastAPI, TensorFlow, OpenCV, NumPy, scikit-learn
+- Frontend: React (Create React App), Framer Motion
+- Serving: Uvicorn (plus `Procfile` for deployment)
 
 ## Project Structure
 
@@ -9,128 +15,117 @@ AI batting classifier/
 |- backend/
 |  |- app.py
 |  |- train.py
-|  |- requirements.txt
-|  |- dataset/
-|  |- cricket_shot_cnn_lstm.h5
-|  `- classes.json
+|  |- data_loader.py
+|  |- model.py
+|  |- video_utils.py
+|  |- config.py
+|  |- classes.json
+|  `- cricket_shot_cnn_lstm.h5
 |- frontend/
 |  |- src/
 |  |- public/
-|  `- package.json
-`- .gitignore
+|  |- package.json
+|  `- .env.development
+|- requirements.txt
+|- Procfile
+|- runtime.txt
+`- package.json
 ```
-
-## Tech Stack
-
-- Backend: Python, Flask, TensorFlow, OpenCV, NumPy
-- Frontend: React (Create React App), Framer Motion
 
 ## Prerequisites
 
-- Python 3.10+
+- Python 3.11
 - Node.js 18+
 - npm 9+
 
-## Backend Setup
+## Setup
+
+1. Create and activate backend virtual environment:
 
 ```powershell
 cd backend
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+pip install -r ..\requirements.txt
 ```
 
-## Frontend Setup
+2. Install frontend dependencies:
 
 ```powershell
-cd frontend
+cd ..\frontend
 npm install
 ```
 
-Optional environment file in `frontend/.env`:
+3. Optional frontend API override:
 
 ```env
 REACT_APP_API_URL=http://localhost:5000
 ```
 
-## Run the App
+If `REACT_APP_API_URL` is not set, the frontend defaults to `http://<current-host>:5000`.
 
-Start backend:
+## Run Locally
+
+Start backend (Terminal 1):
 
 ```powershell
 cd backend
 .\.venv\Scripts\python.exe app.py
 ```
 
-Start frontend (new terminal):
+Start frontend (Terminal 2):
 
 ```powershell
 cd frontend
 npm start
 ```
 
-Run both from project root:
+Run both with helper scripts from project root:
 
 ```powershell
-npm run install:all   # first time only
+npm run install:all
 npm run full
 ```
 
-Or run both from `frontend`:
+URLs:
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:5000`
+
+## API Endpoints
+
+- `GET /`: basic service metadata and endpoint hints.
+- `GET /health`: model load status, classes, and startup warnings/errors.
+- `POST /predict`: accepts `multipart/form-data` with `video` file and returns predictions + batting analysis.
+
+Example:
 
 ```powershell
-cd frontend
-npm run full
-```
-
-Frontend URL: `http://localhost:3000`
-
-Backend URL: `http://localhost:5000`
-
-## API
-
-### `GET /health`
-Returns model and startup status.
-
-### `POST /predict`
-Accepts form-data with a `video` file and returns predictions plus batting analysis.
-
-Example response:
-
-```json
-{
-  "predictions": [{ "shot": "cover", "confidence": 83.7 }],
-  "top_shot": "cover",
-  "top_confidence": 83.7,
-  "analysis": {
-    "batting_strength": 68,
-    "tier": "Strong",
-    "technique_quality": "Good",
-    "technique_match": "High",
-    "consistency_score": 70.0,
-    "control_score": 62.0,
-    "adaptability_score": 20.0,
-    "summary": "..."
-  }
-}
+curl -X POST "http://localhost:5000/predict" -F "video=@sample.mp4"
 ```
 
 ## Training
 
-To retrain the model and regenerate `classes.json`:
+1. Add dataset under `backend/dataset/` using either format:
+- Class-folder format: one folder per class containing videos or frame directories.
+- File-per-class format: one video file per class directly in `backend/dataset/`.
+
+2. Train and regenerate `classes.json`:
 
 ```powershell
 cd backend
 .\.venv\Scripts\python.exe train.py
 ```
 
-Dataset can be structured as either:
+Training output:
 
-- Class folders under `backend/dataset/` containing videos or frame directories
-- One video file per class directly inside `backend/dataset/`
+- Model: `backend/cricket_shot_cnn_lstm.h5`
+- Labels: `backend/classes.json`
 
-## Notes
+## Runtime Notes
 
-- Current model file: `backend/cricket_shot_cnn_lstm.h5`
-- If class count and model output mismatch, retrain and regenerate `classes.json`.
-
+- `runtime.txt` pins Python version for platform deployment.
+- `Procfile` starts API with:
+  `uvicorn app:app --app-dir backend --host 0.0.0.0 --port $PORT`
+- Optional backend env vars:
+  `CORS_ALLOWED_ORIGINS`, `MAX_INFERENCE_WINDOWS`, `MODEL_WARMUP`
